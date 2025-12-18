@@ -14,6 +14,7 @@ from pydantic import BaseModel
 
 from fastapi_jwt_harmony import (
     JWTHarmony,
+    JWTHarmonyBare,
     JWTHarmonyConfig,
     JWTHarmonyDep,
     JWTHarmonyException,
@@ -46,9 +47,9 @@ USERS_DB = {
 JWTHarmony.configure(
     User,
     JWTHarmonyConfig(
-        authjwt_secret_key='your-super-secret-key',  # pragma: allowlist secret
-        authjwt_token_location=frozenset({'headers', 'cookies'}),  # Support both
-        authjwt_access_token_expires=60 * 60,  # 1 hour for WebSocket connections
+        secret_key='your-super-secret-key',  # pragma: allowlist secret
+        token_location=frozenset({'headers', 'cookies'}),  # Support both
+        access_token_expires=60 * 60,  # 1 hour for WebSocket connections
     ),
 )
 
@@ -105,7 +106,7 @@ def authenticate_user(username: str, password: str) -> User | None:
 
 
 @app.post('/auth/login')
-def login(credentials: LoginRequest, Authorize: JWTHarmony[User] = Depends()) -> dict[str, Any]:
+def login(credentials: LoginRequest, Authorize: JWTHarmony[User] = Depends(JWTHarmonyBare)) -> dict[str, Any]:
     """Login endpoint for getting JWT token."""
     user = authenticate_user(credentials.username, credentials.password)
     if not user:

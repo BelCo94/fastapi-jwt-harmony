@@ -13,6 +13,7 @@ from pydantic import BaseModel
 
 from fastapi_jwt_harmony import (
     JWTHarmony,
+    JWTHarmonyBare,
     JWTHarmonyConfig,
     JWTHarmonyDep,
     JWTHarmonyException,
@@ -41,13 +42,13 @@ USERS_DB = {'alice': {'id': '1', 'username': 'alice', 'email': 'alice@example.co
 JWTHarmony.configure(
     User,
     JWTHarmonyConfig(
-        authjwt_secret_key='your-super-secret-key-change-in-production',  # pragma: allowlist secret
-        authjwt_token_location=frozenset({'cookies'}),  # Store tokens in cookies
-        authjwt_cookie_csrf_protect=True,  # Enable CSRF protection
-        authjwt_cookie_secure=False,  # Set to True in production with HTTPS
-        authjwt_cookie_samesite='strict',  # CSRF protection
-        authjwt_access_token_expires=15 * 60,  # 15 minutes
-        authjwt_refresh_token_expires=30 * 24 * 60 * 60,  # 30 days
+        secret_key='your-super-secret-key-change-in-production',  # pragma: allowlist secret
+        token_location=frozenset({'cookies'}),  # Store tokens in cookies
+        cookie_csrf_protect=True,  # Enable CSRF protection
+        cookie_secure=False,  # Set to True in production with HTTPS
+        cookie_samesite='strict',  # CSRF protection
+        access_token_expires=15 * 60,  # 15 minutes
+        refresh_token_expires=30 * 24 * 60 * 60,  # 30 days
     ),
 )
 
@@ -67,7 +68,7 @@ def authenticate_user(username: str, password: str) -> User | None:
 
 
 @app.post('/auth/login')
-def login(credentials: LoginRequest, response: Response, Authorize: JWTHarmony[User] = Depends()) -> dict[str, Any]:
+def login(credentials: LoginRequest, response: Response, Authorize: JWTHarmony[User] = Depends(JWTHarmonyBare)) -> dict[str, Any]:
     """Login endpoint that sets secure cookies."""
     user = authenticate_user(credentials.username, credentials.password)
     if not user:

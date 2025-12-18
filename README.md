@@ -38,7 +38,7 @@ pip install fastapi-jwt-harmony[asymmetric]
 ```python
 from fastapi import FastAPI, Depends
 from pydantic import BaseModel
-from fastapi_jwt_harmony import JWTHarmony, JWTHarmonyDep
+from fastapi_jwt_harmony import JWTHarmony, JWTHarmonyDep, JWTHarmonyBare
 
 app = FastAPI()
 
@@ -68,7 +68,7 @@ JWTHarmony.configure(
 # )
 
 @app.post("/login")
-def login(Authorize: JWTHarmony[User] = Depends()):
+def login(Authorize: JWTHarmony[User] = Depends(JWTHarmonyBare)):
     # Authenticate user (your logic here)
     user = User(id="123", username="john", email="john@example.com")
 
@@ -133,7 +133,7 @@ JWTHarmony.configure(
 )
 
 @app.post("/login")
-def login(response: Response, Authorize: JWTHarmony[User] = Depends()):
+def login(response: Response, Authorize: JWTHarmony[User] = Depends(JWTHarmonyBare)):
     user = User(id="123", username="john", email="john@example.com")
     access_token = Authorize.create_access_token(user_claims=user)
 
