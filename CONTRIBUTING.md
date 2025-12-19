@@ -262,7 +262,7 @@ When adding new features, include practical examples:
 ```python
 # ✅ Good: Clear example with context
 @app.post("/login")
-def login(Authorize: JWTHarmony[User] = Depends()):
+def login(Authorize: JWTHarmony[User] = Depends(JWTHarmonyBare)):
     """Login endpoint that creates JWT tokens."""
     user = User(id="123", username="john")
     access_token = Authorize.create_access_token(user_claims=user)

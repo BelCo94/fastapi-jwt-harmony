@@ -9,7 +9,7 @@ from typing import Any
 from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel
 
-from fastapi_jwt_harmony import JWTHarmony, JWTHarmonyConfig, JWTHarmonyDep, JWTHarmonyRefresh
+from fastapi_jwt_harmony import JWTHarmony, JWTHarmonyBare, JWTHarmonyConfig, JWTHarmonyDep, JWTHarmonyRefresh
 
 app = FastAPI(title='JWT Harmony Basic Example')
 
@@ -37,10 +37,10 @@ USERS_DB = {
 JWTHarmony.configure(
     User,
     {
-        'authjwt_secret_key': 'your-super-secret-key-change-in-production',  # pragma: allowlist secret
-        'authjwt_token_location': {'headers'},  # Use headers for this example
-        'authjwt_access_token_expires': 15 * 60,  # 15 minutes
-        'authjwt_refresh_token_expires': 30 * 24 * 60 * 60,  # 30 days
+        'secret_key': 'your-super-secret-key-change-in-production',  # pragma: allowlist secret
+        'token_location': {'headers'},  # Use headers for this example
+        'access_token_expires': 15 * 60,  # 15 minutes
+        'refresh_token_expires': 30 * 24 * 60 * 60,  # 30 days
     },
 )
 
@@ -49,10 +49,10 @@ JWTHarmony.configure(
 # JWTHarmony.configure(
 #     User,
 #     JWTHarmonyConfig(
-#         authjwt_secret_key="your-super-secret-key-change-in-production",  # pragma: allowlist secret
-#         authjwt_token_location={"headers"},  # Use headers for this example
-#         authjwt_access_token_expires=15 * 60,  # 15 minutes
-#         authjwt_refresh_token_expires=30 * 24 * 60 * 60,  # 30 days
+#         secret_key="your-super-secret-key-change-in-production",  # pragma: allowlist secret
+#         token_location={"headers"},  # Use headers for this example
+#         access_token_expires=15 * 60,  # 15 minutes
+#         refresh_token_expires=30 * 24 * 60 * 60,  # 30 days
 #     )
 # )
 
@@ -66,7 +66,7 @@ def authenticate_user(username: str, password: str) -> User | None:
 
 
 @app.post('/auth/login')
-def login(credentials: LoginRequest, Authorize: JWTHarmony[User] = Depends()) -> dict[str, Any]:
+def login(credentials: LoginRequest, Authorize: JWTHarmony[User] = Depends(JWTHarmonyBare)) -> dict[str, Any]:
     """Login endpoint that returns JWT tokens."""
     user = authenticate_user(credentials.username, credentials.password)
     if not user:

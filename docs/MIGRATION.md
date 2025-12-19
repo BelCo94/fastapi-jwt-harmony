@@ -279,7 +279,7 @@ def protected(auth: JWTHarmony[User] = Depends(JWTHarmonyDep)):
 
 # Simple token creation
 @app.post("/login")
-def login(auth: JWTHarmony[User] = Depends()):
+def login(auth: JWTHarmony[User] = Depends(JWTHarmonyBare)):
     user = User(id="123", username="john")
     token = auth.create_access_token(user_claims=user)
     return {"access_token": token}
